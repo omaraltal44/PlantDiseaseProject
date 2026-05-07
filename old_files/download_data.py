@@ -2,11 +2,10 @@ import kagglehub
 import os
 import shutil
 
-print("جاري تحميل dataset الطماطم...")
+print("Downloading tomato dataset...")
 path = kagglehub.dataset_download("syedhashirali260/tomato-leaf-disease-dataset-6-classes")
-print(f"تم التحميل إلى: {path}")
+print(f"Downloaded to: {path}")
 
-# نقل الملفات إلى مجلد data/raw
 os.makedirs("data/raw", exist_ok=True)
 
 for item in os.listdir(path):
@@ -17,4 +16,4 @@ for item in os.listdir(path):
     else:
         shutil.copy2(s, d)
 
-print("✅ البيانات اتنقلت إلى مجلد data/raw")
+print("Data moved to data/raw folder")

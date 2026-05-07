@@ -10,16 +10,14 @@ import os
 from models import SimpleCNN, DeeperCNN, ResNetTransfer, EfficientNetTransfer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"جهاز التقييم: {device}")
+print(f"Evaluation device: {device}")
 
-# تحميل بيانات الاختبار (بدون تحويل بعد)
 test_dataset_raw = datasets.ImageFolder("data/processed/test")
 class_names = test_dataset_raw.classes
 num_classes = len(class_names)
-print("الفئات:", class_names)
-print(f"عدد الصور في الاختبار: {len(test_dataset_raw)}")
+print("Classes:", class_names)
+print(f"Number of test images: {len(test_dataset_raw)}")
 
-# تعريف النماذج مع أحجام الإدخال المناسبة لكل نموذج
 model_configs = {
     "SimpleCNN": {
         "class": SimpleCNN,
@@ -43,7 +41,6 @@ model_configs = {
     }
 }
 
-# دوال مساعدة لإنشاء التحويلات
 def get_transform(img_size):
     return transforms.Compose([
         transforms.Resize((img_size, img_size)),
@@ -59,12 +56,11 @@ for name, config in model_configs.items():
         continue
     
     print(f"\n🔍 Evaluating {name}...")
-    # تحويل خاص بهذا النموذج
+
     transform = get_transform(config["img_size"])
     test_dataset = datasets.ImageFolder("data/processed/test", transform=transform)
     test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-    
-    # تحميل النموذج
+
     model = config["class"](num_classes=7)
     model.load_state_dict(torch.load(weight_path, map_location=device))
     model.to(device)
@@ -80,13 +76,11 @@ for name, config in model_configs.items():
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(y.cpu().numpy())
     
-    # حساب المقاييس
     acc = accuracy_score(all_labels, all_preds)
     precision, recall, f1, _ = precision_recall_fscore_support(all_labels, all_preds, average='weighted')
     results[name] = {'Accuracy': acc, 'Precision': precision, 'Recall': recall, 'F1': f1}
     print(f"{name} -> Acc: {acc:.4f}, Prec: {precision:.4f}, Rec: {recall:.4f}, F1: {f1:.4f}")
     
-    # رسم confusion matrix
     cm = confusion_matrix(all_labels, all_preds)
     plt.figure(figsize=(10, 8))
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
@@ -97,12 +91,11 @@ for name, config in model_configs.items():
     plt.savefig(f'confusion_{name}.png')
     plt.close()
 
-# جدول المقارنة
 if results:
     df = pd.DataFrame(results).T
-    print("\n===== جدول المقارنة النهائي =====")
+    print("\n===== Final Comparison Table =====")
     print(df)
     df.to_csv("comparison.csv")
-    print("✅ تم حفظ جدول المقارنة وكل مصفوفات الارتباك.")
+    print("Comparison table and all confusion matrices saved.")
 else:
-    print("❌ لم يتم تقييم أي نموذج. تأكد من وجود ملفات الأوزان.")
+    print("No model evaluated. Make sure weight files exist.")

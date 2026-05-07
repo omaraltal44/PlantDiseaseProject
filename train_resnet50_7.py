@@ -8,7 +8,6 @@ from models import ResNetTransfer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-# حجم 224×224 لـ ResNet
 train_transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(p=0.5),
@@ -33,7 +32,6 @@ val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False)
 
 model = ResNetTransfer(num_classes=7).to(device)
 
-# تجميد الطبقات الأساسية أولاً
 for param in model.model.parameters():
     param.requires_grad = False
 for param in model.model.fc.parameters():
@@ -42,7 +40,6 @@ for param in model.model.fc.parameters():
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.model.fc.parameters(), lr=0.001)
 
-# المرحلة الأولى: تدريب الرأس فقط
 epochs = 10
 print("Phase 1: Training classifier head...")
 for epoch in range(epochs):
@@ -65,7 +62,6 @@ for epoch in range(epochs):
     acc = correct / len(val_dataset)
     print(f"Epoch {epoch+1:2d} | Loss: {total_loss/len(train_loader):.4f} | Val Acc: {acc:.4f}")
 
-# المرحلة الثانية: فك تجميد الطبقات الأخيرة
 print("Phase 2: Fine-tuning last layers...")
 for param in model.model.layer4.parameters():
     param.requires_grad = True
@@ -92,4 +88,4 @@ for epoch in range(epochs2):
     print(f"Fine-tune {epoch+1:2d} | Loss: {total_loss/len(train_loader):.4f} | Val Acc: {acc:.4f}")
 
 torch.save(model.state_dict(), "resnet50_7classes.pth")
-print("✅ Model saved as resnet50_7classes.pth")
+print("Model saved as resnet50_7classes.pth")

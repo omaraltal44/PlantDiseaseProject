@@ -1,4 +1,3 @@
-# train_simple_7classes.py
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -7,7 +6,7 @@ from torch.utils.data import DataLoader
 from models import SimpleCNN
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"جهاز التدريب: {device}")
+print(f"Training device: {device}")
 
 transform = transforms.Compose([
     transforms.Resize((128, 128)),
@@ -54,4 +53,4 @@ for epoch in range(epochs):
     print(f"Epoch {epoch+1}: Loss={running_loss/len(train_loader):.4f}, Val Acc={acc:.4f}")
 
 torch.save(model.state_dict(), "simplecnn_7classes.pth")
-print("✅ تم حفظ النموذج الجديد باسم simplecnn_7classes.pth")
+print("Model saved as simplecnn_7classes.pth")

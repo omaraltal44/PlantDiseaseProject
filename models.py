@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
-# 1. نموذج CNN بسيط من الصفر
 class SimpleCNN(nn.Module):
     def __init__(self, num_classes=7):
         super(SimpleCNN, self).__init__()
@@ -22,7 +21,6 @@ class SimpleCNN(nn.Module):
         x = self.fc_layers(x)
         return x
 
-# 2. نموذج CNN أعمق مع BatchNorm
 class DeeperCNN(nn.Module):
     def __init__(self, num_classes=7):
         super(DeeperCNN, self).__init__()
@@ -42,7 +40,6 @@ class DeeperCNN(nn.Module):
         x = self.fc_layers(x)
         return x
 
-# 3. ResNet50 (Transfer Learning)
 class ResNetTransfer(nn.Module):
     def __init__(self, num_classes=7):
         super(ResNetTransfer, self).__init__()
@@ -58,7 +55,6 @@ class ResNetTransfer(nn.Module):
     def forward(self, x):
         return self.model(x)
 
-# 4. EfficientNetB0 (Transfer Learning)
 class EfficientNetTransfer(nn.Module):
     def __init__(self, num_classes=7):
         super(EfficientNetTransfer, self).__init__()

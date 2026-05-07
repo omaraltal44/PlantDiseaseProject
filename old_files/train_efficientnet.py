@@ -6,9 +6,8 @@ from torch.utils.data import DataLoader
 from models import EfficientNetTransfer
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"جهاز التدريب: {device}")
+print(f"Training device: {device}")
 
-# EfficientNet يتوقع 224x224
 transform_train = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.RandomHorizontalFlip(),
@@ -60,4 +59,4 @@ for epoch in range(epochs):
     print(f"Epoch {epoch+1}: Loss={running_loss/len(train_loader):.4f}, Val Acc={acc:.4f}")
 
 torch.save(model.state_dict(), "efficientnet.pth")
-print("تم حفظ النموذج efficientnet.pth")
+print("Model saved as efficientnet.pth")

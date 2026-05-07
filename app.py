@@ -14,7 +14,6 @@ CLASS_NAMES = ['Not_Tomato', 'Tomato_Early_blight', 'Tomato_Healthy',
                'Tomato_leaf_late_blight', 'Tomato_leaf_yellow_curl_virus', 
                'Tomato_mold_leaf', 'Tomato_septora_leaf_spot']
 
-# تعريف النماذج مع أحجام الإدخال
 MODELS_INFO = {
     "SimpleCNN (Scratch)": {"class": SimpleCNN, "weight": "simplecnn_7classes.pth", "img_size": 128},
     "DeeperCNN (Scratch)": {"class": DeeperCNN, "weight": "deepercnn_7classes.pth", "img_size": 128},
@@ -22,13 +21,11 @@ MODELS_INFO = {
     "EfficientNet (Transfer)": {"class": EfficientNetTransfer, "weight": "efficientnet_7classes_fixed.pth", "img_size": 224}
 }
 
-# الحفاظ فقط على النماذج الموجودة
 available_models = {name: info for name, info in MODELS_INFO.items() if os.path.exists(info["weight"])}
 if not available_models:
     st.error("No trained models found! Please train at least one model.")
     st.stop()
 
-# دالة تحميل النموذج (مع cache)
 @st.cache_resource
 def load_model(model_name):
     info = available_models[model_name]
@@ -37,20 +34,17 @@ def load_model(model_name):
     model.eval()
     return model, info["img_size"]
 
-# الشريط الجانبي لاختيار النموذج
 st.sidebar.header("Model Selection")
 selected_model = st.sidebar.selectbox("Choose AI Model:", list(available_models.keys()))
 model, img_size = load_model(selected_model)
 st.sidebar.success(f"Loaded {selected_model} (input size {img_size}×{img_size})")
 
-# تحويل الصورة يعتمد على حجم النموذج
 transform = transforms.Compose([
     transforms.Resize((img_size, img_size)),
     transforms.ToTensor(),
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-# رفع الصورة
 uploaded_file = st.file_uploader("Upload a clear tomato leaf image", type=["jpg", "jpeg", "png"])
 if uploaded_file:
     image = Image.open(uploaded_file).convert('RGB')
@@ -76,7 +70,6 @@ if uploaded_file:
         st.info(f"**Confidence:** {confidence:.2f}%")
         st.caption(f"⏱️ Inference time: {elapsed:.2f} ms")
         
-        # توصيات سريعة (اختصار)
         rec = {
             'Tomato_Early_blight': "🔸 Apply Mancozeb or Chlorothalonil.",
             'Tomato_Healthy': "✅ Healthy plant.",
